@@ -1,0 +1,242 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>media devices</title>
+    <script src="http://localhost:3002/socket.io/socket.io.js"></script>
+    <script>
+        function _assert(desc, v) {
+            if (v) {
+                return;
+            }
+            else {
+                let caller = _assert.caller || 'Top level';
+                console.error('ASSERT in %s, %s is :', caller, desc, v);
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <button id="devices_button" onclick="getDeviceList()">getDevices</button>
+    <select id="camera_list" size="1" style="width:160pt;">
+        <option>(video)</option>
+    </select>
+    <select id="mic_list" size="1" style="width:160pt;">
+        <option>(audio)</option>
+    </select>
+    <select id="speaker_list" size="1" style="width:160pt;">
+        <option>(speaker)</option>
+    </select>
+    <button id="start_video_button" onclick="startSelectedVideoAudio()">Start Selected Video/Audio</button>
+    <button id="stop_button" onclick="stopVideo()">StopVideo</button>
+    <button id="speaker_button" onclick="setSpeaker()">SetSpeaker</button>
+    <button id="speaker_button" onclick="startFakeVideo()">start Fake video</button>
+    &nbsp;
+    <button type="button" onclick="connect();">Connect</button>
+    <button type="button" onclick="hangUp();">Hang Up</button>
+    <br />
+    <video id="local_video" width="160px" height="120px" autoplay="1" controls="1" style="border: 1px solid;"></video>
+    <div id="container"></div>
+</body>
+<script>
+ //navigator.getUserMedia  = navigator.getUserMedia    || navigator.webkitGetUserMedia ||
+ //                          navigator.mozGetUserMedia || navigator.msGetUserMedia;
+ //window.RTCPeerConnection = window.RTCPeerConnection || window.webkitRTCPeerConnection || window.mozRTCPeerConnection;
+ //window.RTCIceCandidate = window.RTCIceCandidate || window.mozRTCIceCandidate || window.RTCIceCandidate;
+
+ var localVideo_var = document.getElementById('local_video');
+ var videoContainer_var = document.getElementById('container');
+ var micList_var = document.getElementById("mic_list");
+ var cameraList_var = document.getElementById("camera_list");
+ var speakerList_var = document.getElementById("speaker_list");
+
+ var localStream = null;
+
+ function stopVideo() {
+  localVideo_var.pause();
+  if (localVideo_var.srcObject) {
+    localVideo_var.srcObject = null;
+  }
+  else {
+    localVideo_var.src = "";
+  }
+
+  if (localStream) {
+   stopStream(localStream);
+   localStream = null;
+  }
+ }
+
+ function stopStream(stream) {
+  if (!stream) {
+   console.warn('NO stream');
+   return;
+  }
+
+  var tracks = stream.getTracks();
+  if (! tracks) {
+   console.warn('NO tracks');
+   return;
+  }
+
+  for (index in tracks) {
+   tracks[index].stop();
+  }
+ }
+
+ function logStream(msg, stream) {
+  console.log(msg + ': id=' + stream.id);
+
+  var videoTracks = stream.getVideoTracks();
+  if (videoTracks) {
+   console.log('videoTracks.length=' + videoTracks.length);
+   for (var i = 0; i < videoTracks.length; i++) {
+    var track = videoTracks[i];
+    console.log(' track.id=' + track.id);
+   }
+  }
+
+  var audioTracks = stream.getAudioTracks();
+  if (audioTracks) {
+   console.log('audioTracks.length=' + audioTracks.length);
+   for (var i = 0; i < audioTracks.length; i++) {
+    var track = audioTracks[i];
+    console.log(' track.id=' + track.id);
+   }
+  }
+ }
+
+
+//--------------------
+
+ function clearDeviceList() {
+  while(micList_var.lastChild) {
+   micList_var.removeChild(micList_var.lastChild);
+  }
+  while(cameraList_var.lastChild) {
+   cameraList_var.removeChild(cameraList_var.lastChild);
+  }
+  while(speakerList_var.lastChild) {
+   speakerList_var.removeChild(speakerList_var.lastChild);
+  }
+ }
+
+ function addDevice(device) {
+  if (device.kind === 'audioinput') {
+   var id = device.deviceId;
+   var label = device.label || 'microphone'; // label is available for https
+   var option = document.createElement('option');
+   option.setAttribute('value', id);
+   option.innerHTML = label + '(' + id + ')';;
+   micList_var.appendChild(option);
+  }
+  else if (device.kind === 'videoinput') {
+   var id = device.deviceId;
+   var label = device.label || 'camera'; // label is available for https
+
+   var option = document.createElement('option');
+   option.setAttribute('value', id);
+   option.innerHTML = label + '(' + id + ')';
+   cameraList_var.appendChild(option);
+  }
+  else if (device.kind === 'audiooutput') {
+   var id = device.deviceId;
+   var label = device.label || 'speaker'; // label is available for https
+
+   var option = document.createElement('option');
+   option.setAttribute('value', id);
+   option.innerHTML = label + '(' + id + ')';
+   speakerList_var.appendChild(option);
+  }
+  else {
+   console.error('UNKNOWN Device kind:' + device.kind);
+  }
+ }
+
+ function getDeviceList() {
+  clearDeviceList();
+  navigator.mediaDevices.enumerateDevices()
+  .then(function(devices) {
+   devices.forEach(function(device) {
+    console.log(device.kind + ": " + device.label +
+                " id = " + device.deviceId);
+    addDevice(device);
+   });
+  })
+  .catch(function(err) {
+   console.error('enumerateDevide ERROR:', err);
+  });
+ }
+
+ function getSelectedVideo() {
+  var id = cameraList_var.options[cameraList_var.selectedIndex].value;
+  return id;
+ }
+
+ function getSelectedAudio() {
+  var id = micList_var.options[micList_var.selectedIndex].value;
+  return id;
+ }
+
+ function getSelectedSpeaker() {
+  var id = speakerList_var.options[speakerList_var.selectedIndex].value;
+  return id;
+ }
+
+ function setSpeaker() {
+  var speakerId = getSelectedSpeaker();
+  localVideo_var.volume = 0;
+  localVideo_var.setSinkId(speakerId)
+  .then(function() {
+   console.log('setSinkID Success');
+  })
+  .catch(function(err) {
+   console.error('setSinkId Err:', err);
+  });
+ }
+
+ function startFakeVideo() {
+  var constraints = {video: true, fake: true, audio: false};
+  navigator.mediaDevices.getUserMedia(
+   constraints
+  ).then(function(stream) {
+   localStream = stream;
+   logStream('selectedVideo', stream);
+   localVideo_var.srcObject = stream;
+  }).catch(function(err){
+   console.error('getUserMedia Err:', err);
+  });
+ }
+
+ function startSelectedVideoAudio() {
+  var audioId = getSelectedAudio();
+  var deviceId = getSelectedVideo();
+  console.log('selected video device id=' + deviceId + ' ,  audio=' + audioId);
+  var constraints = {
+    audio: {
+     deviceId: audioId
+    },
+    video: {
+     deviceId: deviceId
+    }
+  };
+  console.log('mediaDevice.getMedia() constraints:', constraints);
+
+  navigator.mediaDevices.getUserMedia(
+   constraints
+  ).then(function(stream) {
+   localStream = stream;
+   logStream('selectedVideo', stream);
+   localVideo_var.srcObject = stream;
+  }).catch(function(err){
+   console.error('getUserMedia Err:', err);
+  });
+ }
+
+ navigator.mediaDevices.ondevicechange = function (evt) {
+  console.log('mediaDevices.ondevicechange() evt:', evt);
+ };
+</script>
+</html>
