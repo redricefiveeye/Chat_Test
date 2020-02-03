@@ -593,9 +593,9 @@
     // ---------------------- connection handling -----------------------
     function prepareNewConnection(id) {
   let pc_config = {"iceServers":[
-    {"urls": "stun:coturn.yourdomain.com:80"},
-    {"urls":"turn:coturn.yourdomain.com:80?transport=udp", "username":"user", "credential":"password"},
-    {"urls":"turn:coturn.yourdomain.com:80?transport=tcp", "username":"user", "credential":"password"}
+    {"urls": "stun:coturn.redrice.com:80"},
+    {"urls":"turn:coturn.redrice.com:80?transport=udp", "username":"user", "credential":"password"},
+    {"urls":"turn:coturn.redrice.com:80?transport=tcp", "username":"user", "credential":"password"}
   ]};
         let peer = new RTCPeerConnection(pc_config);
 
