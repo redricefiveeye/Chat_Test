@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <header>
+
+    </header>
+    <main>
+        <form id="make" action="#">
+            <input type="text" id="room_name" name="room_name">
+            <button type="button" onclick="makeRoom()" value="作成"></button>
+        </form>
+    
+    </main>
+
+</body>
+<script>
+    function makeRoom() {
+        var input_text = document.getElementById("input_message").value;
+        window.location.href = 'https://redricefiveeye.github.io/Chat_Test/WebRTC-03.html?'+input_text; // 通常の遷移
+    }
+
+</script>
+</html>

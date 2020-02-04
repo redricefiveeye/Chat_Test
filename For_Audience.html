@@ -22,17 +22,17 @@
                 console.error('ASSERT in %s, %s is :', caller, desc, v);
             }
         }
-  firebase.initializeApp(config);
+        firebase.initializeApp(config);
     </script>
 
 </head>
 <body>
     firebase signaling for multi-party (trickle ICE)<br />
-    <button type="button" onclick="startVideo();">Start Video</button>
-    <button type="button" onclick="stopVideo();">Stop Video</button>
+    <button type="button" onclick="startVideo();">カメラ接続</button>
+    <button type="button" onclick="stopVideo();">カメラ切断</button>
     &nbsp;
-    <button type="button" onclick="connect();">Connect</button>
-    <button type="button" onclick="hangUp();">Hang Up</button>
+    <button type="button" onclick="connect();">通信開始</button>
+    <button type="button" onclick="hangUp();">切断</button>
     &nbsp;
     <a id="room_link" href="" target="_blank">Open another window (link to this room)</a>
     <a id="mail_link" href="" target="_blank">Mail link of this room</a>
@@ -592,11 +592,13 @@
 
     // ---------------------- connection handling -----------------------
     function prepareNewConnection(id) {
-  let pc_config = {"iceServers":[
-    {"urls": "stun:coturn.redrice.com:80"},
-    {"urls":"turn:coturn.redrice.com:80?transport=udp", "username":"user", "credential":"password"},
-    {"urls":"turn:coturn.redrice.com:80?transport=tcp", "username":"user", "credential":"password"}
-  ]};
+        let pc_config = {
+            "iceServers": [
+                { "urls": "stun:coturn.redrice.com:80" },
+                { "urls": "turn:coturn.redrice.com:80?transport=udp", "username": "user", "credential": "password" },
+                { "urls": "turn:coturn.redrice.com:80?transport=tcp", "username": "user", "credential": "password" }
+            ]
+        };
         let peer = new RTCPeerConnection(pc_config);
 
         // --- on get remote stream ---
