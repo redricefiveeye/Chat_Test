@@ -1,0 +1,32 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        <form id="make" action="#">
+            <input type="text" id="room_name" name="room_name">
+            <input type="button" onclick="link()" value="作成">
+        </form>
+
+    </main>
+
+</body>
+<script type="text/javascript">
+    function link() {
+        var input_text = document.getElementById("room_name").value;
+        if (input_text != "" && input_text.indexOf(' ') == 0) {
+            location.href = "https://redricefiveeye.github.io/Chat_Test/WebRTC-03.html?" + input_text; // 通常の遷移
+
+        }
+        else {
+            alert("ルーム名を記入もしくは、空白をなくしてください");
+        }
+    }
+
+</script>
+</html>
