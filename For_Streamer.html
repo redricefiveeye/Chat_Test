@@ -163,7 +163,15 @@
     setRoomLink(room);
     function start_connect() {
         startVideo();
-        connect();
+        if (!isReadyToConnect()) {
+            console.warn('NOT READY to connect');
+        }
+        else if (!canConnectMore()) {
+            console.log('TOO MANY connections');
+        }
+        else {
+            callMe();
+        }
 
     }
 
