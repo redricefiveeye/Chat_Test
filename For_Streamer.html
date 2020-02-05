@@ -162,16 +162,7 @@
     joinRoom(room);
     setRoomLink(room);
     function start_connect() {
-        startVideo();
-        if (!isReadyToConnect()) {
-            console.warn('NOT READY to connect');
-        }
-        else if (!canConnectMore()) {
-            console.log('TOO MANY connections');
-        }
-        else {
-            callMe();
-        }
+        startVideo2();
 
     }
 
@@ -493,6 +484,26 @@
             }).catch(function (error) { // error
                 console.error('getUserMedia error:', error);
                 return;
+            });
+    }
+
+    function startVideo2() {
+        getDeviceStream({ video: true, audio: true }) // audio: false <-- ontrack once, audio:true --> ontrack twice!!
+            //navigator.mediaDevices.getUserMedia({video: true, audio: true})
+            .then(function (stream) { // success
+                localStream = stream;
+                playVideo(localVideo, stream);
+            }).catch(function (error) { // error
+                console.error('getUserMedia error:', error);
+        if (!isReadyToConnect()) {
+            console.warn('NOT READY to connect');
+        }
+        else if (!canConnectMore()) {
+            console.log('TOO MANY connections');
+        }
+        else {
+            callMe();
+        }
             });
     }
 
