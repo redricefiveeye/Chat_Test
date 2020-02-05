@@ -33,6 +33,8 @@
     &nbsp;
     <button type="button" onclick="connect();">通信開始</button>
     <button type="button" onclick="hangUp();">切断</button>
+    <button type="button" onclick="start_connect();">一式通信開始</button>
+
     &nbsp;
     <a id="room_link" href="" target="_blank">Open another window (link to this room)</a>
     <a id="mail_link" href="" target="_blank">Mail link of this room</a>
@@ -159,6 +161,11 @@
 
     joinRoom(room);
     setRoomLink(room);
+    function start_connect() {
+        startVideo();
+        connect();
+
+    }
 
     function joinRoom(room) {
         console.log('join room name = ' + room);
