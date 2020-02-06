@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>multi firebase</title>
+    <title>ビデオチャット</title>
     <!--
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     -->
@@ -27,12 +27,12 @@
 
 </head>
 <body>
-    firebase signaling for multi-party (trickle ICE)<br />
-    <button type="button" onclick="startVideo();">Start Video</button>
-    <button type="button" onclick="stopVideo();">Stop Video</button>
+    ①→②の順番に押して接続してください<br />
+    <button type="button" onclick="startVideo();">①カメラ起動</button>
+    <button type="button" onclick="stopVideo();">カメラ切断</button>
     &nbsp;
-    <button type="button" onclick="connect();">Connect</button>
-    <button type="button" onclick="hangUp();">Hang Up</button>
+    <button type="button" onclick="connect();">②通信接続</button>
+    <button type="button" onclick="hangUp();">通信切断</button>
     &nbsp;
     <a id="room_link" href="" target="_blank">Open another window (link to this room)</a>
     <a id="mail_link" href="" target="_blank">Mail link of this room</a>
