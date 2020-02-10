@@ -28,7 +28,7 @@
 </head>
 <body>
     ①→②の順番に押して接続してください<br />
-    GoogleTRUNサーバー版<br />
+    自作TRUNサーバー<br/>
     <button type="button" onclick="startVideo();">①カメラ起動</button>
     <button type="button" onclick="stopVideo();">カメラ切断</button>
     &nbsp;
@@ -592,9 +592,9 @@
     // ---------------------- connection handling -----------------------
     function prepareNewConnection(id) {
   let pc_config = {"iceServers":[
-    {"urls": "stun:stun.l.google.com:19302"},
-    {"urls": "stun:stun1.l.google.com:19302"},
-    {"urls": "stun:stun2.l.google.com:19302"}
+    {"urls": "stun:coturn.redrice.com:80"},
+    {"urls":"turn:coturn.redrice.com:80?transport=udp", "username":"user", "credential":"password"},
+    {"urls":"turn:coturn.redrice.com:80?transport=tcp", "username":"user", "credential":"password"}
   ]};
         let peer = new RTCPeerConnection(pc_config);
 
